@@ -1,0 +1,65 @@
+# ShareItem - config.yml
+# Location: plugins/shareitem/config.yml  (folder is lowercase "shareitem" as you requested)
+# Reload: /shareitemreload (requires shareitem.admin) or restart server
+#
+# ═══════════════════════════════════════════════════════════════
+#  TERMS EXPLAINED
+# ═══════════════════════════════════════════════════════════════
+#  <playerName>  - Exact online player name. Selectors like @a, @p, @e, @r, @s are BLOCKED
+#                  (you must target exactly ONE player).
+#  <item>        - Bukkit Material name, e.g. stone, diamond_sword, minecraft:iron_ingot
+#                  Use underscore, case-insensitive. Must be a valid item (not air/water).
+#  <count>       - How many to share:
+#                   number  = e.g. 10  -> share 10 of that item type
+#                   *       = share ALL of that item type in your inventory
+#                   omitted = share 1
+#  <sharedItem>  - Placeholder rendered as e.g. "10x Stone" (count + formatted material name)
+#  [ShareItem]   - Hardcoded plugin tag prefix (NOT editable, always "[ShareItem]  ")
+#  [Cancel] [Claim] [Reject] - Hardcoded clickable button labels (NOT editable, color/click is fixed)
+#  Placeholders usable in messages below: {player}, {sharedItem}, {item}, {count}, {have}, {need}
+#  Colors: Use MiniMessage tags like <green>, <red>, <yellow>, <gray> etc., or legacy &a &c
+#          All messages below support MiniMessage. Leave empty "" to disable a message.
+#
+
+settings:
+  # How long source player can click [Cancel] before target is notified (seconds)
+  cancel-window-seconds: 3
+  # How long target has to click [Claim]/[Reject] before request expires (seconds)
+  # After this, claim/reject does nothing and shows expired message.
+  request-timeout-seconds: 60
+  # If true, dropping items when target inventory is full (as spec). If false, leftover stays pending.
+  drop-if-full: true
+
+messages:
+  # --- Success flow (editable, prefix [ShareItem] is added automatically) ---
+  command-accepted: "Command Accepted."
+  sharing: "Sharing {sharedItem} to player {player}"
+  waiting: "Waiting for target player to respond..."
+  request-received: "{player} is requesting to send you {sharedItem}"
+
+  claimed-source: "{player} had claimed the sent items"
+  claimed-target: "You have claimed the sent items"
+  rejected-source: "{player} had rejected the sent items"
+  rejected-target: "You have rejected the sent items"
+
+  cancelled-source: "Request cancelled."
+  cancelled-target: "The share request was cancelled by the sender."
+  expired: "Request expired or already handled."
+
+  # --- Errors (editable) ---
+  error-not-player: "Only players can use this command."
+  error-no-permission: "You don't have permission to do that."
+  error-usage: "Usage: /shareitem <player> <item> [count|*]"
+  error-selector-not-allowed: "Selectors like @a are not allowed. Specify a single player."
+  error-player-not-found: "Player {player} not found or not online."
+  error-self-share: "You cannot share items to yourself."
+  error-invalid-item: "Invalid item: {item}"
+  error-invalid-count: "Invalid count: {count} (use a positive number or * )"
+  error-no-item: "You don't have any {item}."
+  error-not-enough: "You don't have enough {item} (need {need}, have {have})."
+  error-pending-exists: "You already have a pending share request. Wait or cancel it first."
+  error-no-pending: "No pending request to handle."
+
+  # --- System ---
+  reloaded: "ShareItem config reloaded."
+  dropped-info: "Inventory full, items dropped at your location."

@@ -1,0 +1,24 @@
+name: shareitem
+version: '26.2'
+main: dev.shareitem.ShareItemPlugin
+api-version: '26.2'
+description: Simple command to share items remotely between players.
+author: ShareItem
+website: https://example.com
+prefix: ShareItem
+permissions:
+  shareitem.use:
+    description: Allows using /shareitem
+    default: true
+  shareitem.admin:
+    description: Admin permission
+    default: op
+commands:
+  shareitem:
+    description: Share items to another player
+    usage: /shareitem <player> <item> [count|*]
+    permission: shareitem.use
+  shareitemreload:
+    description: Reload ShareItem config
+    usage: /shareitemreload
+    permission: shareitem.admin
