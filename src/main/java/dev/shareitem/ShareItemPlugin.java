@@ -33,9 +33,8 @@ public class ShareItemPlugin extends JavaPlugin implements CommandExecutor, TabC
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        Objects.requireNonNull(getCommand("shareitem")).setExecutor(this);
-        Objects.requireNonNull(getCommand("shareitem")).setTabCompleter(this);
-        Objects.requireNonNull(getCommand("shareitemreload")).setExecutor(this);
+        Objects.requireNonNull(getCommand("si")).setExecutor(this);
+        Objects.requireNonNull(getCommand("si")).setTabCompleter(this);
         getLogger().info("ShareItem 26.2 enabled - Paper build 121 compatible");
     }
 
@@ -165,7 +164,13 @@ public class ShareItemPlugin extends JavaPlugin implements CommandExecutor, TabC
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
-        if (command.getName().equalsIgnoreCase("shareitemreload")) {
+        if (!command.getName().equalsIgnoreCase("si")) return false;
+        if (args.length == 0) {
+            sender.sendMessage(PREFIX.append(deserialize(msg("error-usage", "Usage: /si share <player> <item> [count|*]"))));
+            return true;
+        }
+        String sub = args[0].toLowerCase(Locale.ROOT);
+        if (sub.equals("reload")) {
             if (!sender.hasPermission("shareitem.admin") && !sender.isOp()) {
                 sender.sendMessage(PREFIX.append(withPlaceholders(msg("error-no-permission", "You don't have permission to do that."), Map.of())));
                 return true;
@@ -175,7 +180,16 @@ public class ShareItemPlugin extends JavaPlugin implements CommandExecutor, TabC
             sender.sendMessage(PREFIX.append(deserialize(reloaded)));
             return true;
         }
-        if (!command.getName().equalsIgnoreCase("shareitem")) return false;
+        if (!sub.equals("share")) {
+            sender.sendMessage(PREFIX.append(deserialize(msg("error-usage", "Usage: /si share <player> <item> [count|*]"))));
+            return true;
+        }
+        // shift args: /si share <player> <item> [count]
+        // args[0]=share, args[1]=player, args[2]=item, args[3]=count
+        if (args.length < 3) {
+            sender.sendMessage(PREFIX.append(deserialize(msg("error-usage", "Usage: /si share <player> <item> [count|*]"))));
+            return true;
+        }
 
         if (!(sender instanceof Player source)) {
             String notPlayer = msg("error-not-player", "Only players can use this command.");
@@ -188,14 +202,9 @@ public class ShareItemPlugin extends JavaPlugin implements CommandExecutor, TabC
             return true;
         }
 
-        if (args.length < 2) {
-            sender.sendMessage(PREFIX.append(deserialize(msg("error-usage", "Usage: /shareitem <player> <item> [count|*]"))));
-            return true;
-        }
-
-        String playerName = args[0];
-        String itemStr = args[1];
-        String countStr = args.length >= 3 ? args[2] : null;
+        String playerName = args[1];
+        String itemStr = args[2];
+        String countStr = args.length >= 4 ? args[3] : null;
 
         // Block selectors
         if (playerName.startsWith("@") || playerName.contains("@a") || playerName.contains("@p") || playerName.contains("@e") || playerName.contains("@r") || playerName.contains("@s")) {
@@ -477,18 +486,24 @@ public class ShareItemPlugin extends JavaPlugin implements CommandExecutor, TabC
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String @NotNull [] args) {
-        if (command.getName().equalsIgnoreCase("shareitemreload")) return List.of();
-        if (!command.getName().equalsIgnoreCase("shareitem")) return List.of();
+        if (!command.getName().equalsIgnoreCase("si")) return List.of();
         if (args.length == 1) {
+            String sub = args[0].toLowerCase(Locale.ROOT);
             List<String> out = new ArrayList<>();
-            String partial = args[0].toLowerCase();
+            if ("share".startsWith(sub)) out.add("share");
+            if ("reload".startsWith(sub) && sender.hasPermission("shareitem.admin")) out.add("reload");
+            return out;
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("share")) {
+            List<String> out = new ArrayList<>();
+            String partial = args[1].toLowerCase();
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (p.getName().toLowerCase().startsWith(partial)) out.add(p.getName());
             }
             return out;
         }
-        if (args.length == 2) {
-            String partial = args[1].toLowerCase();
+        if (args.length == 3 && args[0].equalsIgnoreCase("share")) {
+            String partial = args[2].toLowerCase();
             return Arrays.stream(Material.values())
                     .filter(m -> !m.isAir() && m.isItem())
                     .map(m -> m.name().toLowerCase())
@@ -496,8 +511,8 @@ public class ShareItemPlugin extends JavaPlugin implements CommandExecutor, TabC
                     .limit(50)
                     .collect(Collectors.toList());
         }
-        if (args.length == 3) {
-            String partial = args[2].toLowerCase();
+        if (args.length == 4 && args[0].equalsIgnoreCase("share")) {
+            String partial = args[3].toLowerCase();
             List<String> s = new ArrayList<>();
             if ("*".startsWith(partial)) s.add("*");
             if ("1".startsWith(partial)) s.add("1");

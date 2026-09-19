@@ -14,11 +14,7 @@ permissions:
     description: Admin permission
     default: op
 commands:
-  shareitem:
-    description: Share items to another player
-    usage: /shareitem <player> <item> [count|*]
+  si:
+    description: ShareItem base command
+    usage: /si <share|reload>
     permission: shareitem.use
-  shareitemreload:
-    description: Reload ShareItem config
-    usage: /shareitemreload
-    permission: shareitem.admin

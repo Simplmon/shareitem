@@ -49,7 +49,7 @@ messages:
   # --- Errors (editable) ---
   error-not-player: "Only players can use this command."
   error-no-permission: "You don't have permission to do that."
-  error-usage: "Usage: /shareitem <player> <item> [count|*]"
+  error-usage: "Usage: /si share <player> <item> [count|*]"
   error-selector-not-allowed: "Selectors like @a are not allowed. Specify a single player."
   error-player-not-found: "Player {player} not found or not online."
   error-self-share: "You cannot share items to yourself."
